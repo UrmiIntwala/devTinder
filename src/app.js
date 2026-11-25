@@ -1,19 +1,31 @@
-const express = require('express');
-
+const express = require("express");
+const connectDB = require("./config/database");
 const app = express();
+const User = require("./models/user");
 
-app.use("/", (req, res) => {
-    res.send("Namaste Urmi");
+app.post("/signup", async(req, res) => {
+	const user = new User({
+		firstName: "Virat",
+		lastName: "Kohli",
+		emailId: "virat@kohli.com",
+		password: "virat@123"
+	})
+
+	try {
+		await user.save();
+		res.send("User Added Successfully");
+	} catch(err) {
+		res.status(400).send("Error saving the user:" + err.message);
+	}
 });
 
-app.use("/hello", (req, res) => {
-    res.send("Hello Hello Hello");
-});
-
-app.use("/test",(req,res) => {
-    res.send("Hello from the server!");
-});
-
-app.listen(7777, () => {
-  console.log('Server is running on port 7777');
-});
+connectDB()
+  .then(() => {
+    console.log("Database connection established...");
+    app.listen(7777, () => {
+      console.log("Server is running on port 7777");
+    });
+  })
+  .catch((err) => {
+    console.log("Database cannot be connected!!");
+  });
